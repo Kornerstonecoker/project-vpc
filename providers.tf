@@ -1,3 +1,4 @@
+# Terraform provider configuration for project-vpc
 terraform {
   required_version = ">= 1.5.0"
 

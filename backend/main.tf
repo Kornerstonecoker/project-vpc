@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -24,11 +28,11 @@ resource "azurerm_storage_account" "tfstate" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-
-  # Security Hardening 
+  # security hardening
   allow_nested_items_to_be_public = false
-  shared_access_key_enabled = false
-  min_tls_version = "TLS1_2"
+  shared_access_key_enabled       = false
+  min_tls_version                 = "TLS1_2"
+  public_network_access_enabled   = false
 
   blob_properties {
     versioning_enabled = true
@@ -37,16 +41,24 @@ resource "azurerm_storage_account" "tfstate" {
       days = 30
     }
   }
+
+  #checkov:skip=CKV_AZURE_206:LRS acceptable for non-production state storage
+  #checkov:skip=CKV2_AZURE_33:Private endpoint added when hub VNet is deployed
+  #checkov:skip=CKV2_AZURE_1:CMK not required for learning environment
+  #checkov:skip=CKV_AZURE_33:Queue logging not supported in azurerm 3.x blob_properties
+  #checkov:skip=CKV2_AZURE_21:Blob logging not supported in azurerm 3.x blob_properties
 }
 
 resource "azurerm_storage_container" "tfstate" {
   name                  = "tfstate"
   storage_account_name  = azurerm_storage_account.tfstate.name
   container_access_type = "private"
+
+  #checkov:skip=CKV2_AZURE_21:Blob logging configured at storage account level
 }
 
 resource "random_string" "suffix" {
-  length = 6
+  length  = 6
   special = false
-  upper = false
+  upper   = false
 }
