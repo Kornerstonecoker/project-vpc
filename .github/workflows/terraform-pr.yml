@@ -1,0 +1,124 @@
+name: terraform-pr
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**.tf"
+      - "**.tfvars"
+      - ".github/workflows/**.yml"
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+env:
+  TF_VERSION: "1.7.0"
+  ARM_USE_OIDC: "true"
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform format check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+            -backend-config="resource_group_name=rg-terraform-state" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=hub-spoke/terraform.tfstate" \
+            -backend-config="use_azuread_auth=true"
+
+      - name: Terraform validate
+        run: terraform validate
+
+  security-scan:
+    name: security-scan
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          soft_fail: false
+          format: lovely
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          soft_fail: false
+          output_format: cli
+
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    needs: security-scan
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Azure login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+            -backend-config="resource_group_name=rg-terraform-state" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=hub-spoke/terraform.tfstate" \
+            -backend-config="use_azuread_auth=true"
+
+      - name: Terraform plan
+        id: plan
+        run: |
+          terraform plan -no-color -out=tfplan 2>&1 | tee plan_output.txt
+          echo "PLAN_OUTPUT<<EOF" >> $GITHUB_ENV
+          cat plan_output.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Post plan to PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = `#### Terraform Plan
+            \`\`\`
+            ${{ env.PLAN_OUTPUT }}
+            \`\`\``;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
