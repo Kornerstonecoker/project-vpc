@@ -1,0 +1,6 @@
+# All Terraform and pipeline files require review
+*.tf                    @kornerstonecoker
+*.tfvars                @kornerstonecoker
+.github/workflows/      @kornerstonecoker
+modules/                @kornerstonecoker
+environments/           @kornerstonecoker
