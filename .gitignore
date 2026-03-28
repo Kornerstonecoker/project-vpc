@@ -1,0 +1,35 @@
+# Terraform state — never commit these
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+
+# Terraform working directories
+**/.terraform/*
+.terraform/
+
+# Terraform lock file — commit this one, it's intentional
+# .terraform.lock.hcl
+
+# Variable files that may contain secrets
+*.tfvars
+!example.tfvars
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Plan files
+*.tfplan
+tfplan
+
+# Backend bootstrap — ignore its local state and providers
+backend/.terraform/
+backend/terraform.tfstate
+backend/terraform.tfstate.backup
+backend/.terraform.lock.hcl
