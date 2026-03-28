@@ -40,29 +40,13 @@ resource "azurerm_storage_account" "tfstate" {
     delete_retention_policy {
       days = 30
     }
-
-    logging {
-      delete                = true
-      read                  = true
-      write                 = true
-      version               = "1.0"
-      retention_policy_days = 30
-    }
-  }
-
-  queue_properties {
-    logging {
-      delete                = true
-      read                  = true
-      write                 = true
-      version               = "1.0"
-      retention_policy_days = 30
-    }
   }
 
   #checkov:skip=CKV_AZURE_206:LRS acceptable for non-production state storage
   #checkov:skip=CKV2_AZURE_33:Private endpoint added when hub VNet is deployed
   #checkov:skip=CKV2_AZURE_1:CMK not required for learning environment
+  #checkov:skip=CKV_AZURE_33:Queue logging not supported in azurerm 3.x blob_properties
+  #checkov:skip=CKV2_AZURE_21:Blob logging not supported in azurerm 3.x blob_properties
 }
 
 resource "azurerm_storage_container" "tfstate" {
