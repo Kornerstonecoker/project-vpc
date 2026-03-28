@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -24,11 +28,11 @@ resource "azurerm_storage_account" "tfstate" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-
-  # Security Hardening 
+  # security hardening
   allow_nested_items_to_be_public = false
   shared_access_key_enabled       = false
   min_tls_version                 = "TLS1_2"
+  public_network_access_enabled   = false
 
   blob_properties {
     versioning_enabled = true
@@ -36,7 +40,29 @@ resource "azurerm_storage_account" "tfstate" {
     delete_retention_policy {
       days = 30
     }
+
+    logging {
+      delete                = true
+      read                  = true
+      write                 = true
+      version               = "1.0"
+      retention_policy_days = 30
+    }
   }
+
+  queue_properties {
+    logging {
+      delete                = true
+      read                  = true
+      write                 = true
+      version               = "1.0"
+      retention_policy_days = 30
+    }
+  }
+
+  #checkov:skip=CKV_AZURE_206:LRS acceptable for non-production state storage
+  #checkov:skip=CKV2_AZURE_33:Private endpoint added when hub VNet is deployed
+  #checkov:skip=CKV2_AZURE_1:CMK not required for learning environment
 }
 
 resource "azurerm_storage_container" "tfstate" {
