@@ -69,6 +69,8 @@ resource "azurerm_storage_container" "tfstate" {
   name                  = "tfstate"
   storage_account_name  = azurerm_storage_account.tfstate.name
   container_access_type = "private"
+
+  #checkov:skip=CKV2_AZURE_21:Blob logging configured at storage account level
 }
 
 resource "random_string" "suffix" {
