@@ -27,8 +27,8 @@ resource "azurerm_storage_account" "tfstate" {
 
   # Security Hardening 
   allow_nested_items_to_be_public = false
-  shared_access_key_enabled = false
-  min_tls_version = "TLS1_2"
+  shared_access_key_enabled       = false
+  min_tls_version                 = "TLS1_2"
 
   blob_properties {
     versioning_enabled = true
@@ -46,7 +46,7 @@ resource "azurerm_storage_container" "tfstate" {
 }
 
 resource "random_string" "suffix" {
-  length = 6
+  length  = 6
   special = false
-  upper = false
+  upper   = false
 }
