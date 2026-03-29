@@ -126,7 +126,7 @@ resource "azurerm_management_group_policy_assignment" "allowed_locations" {
 resource "azurerm_management_group_policy_assignment" "enable_defender" {
   name                 = "enable-defender-cloud"
   display_name         = "Enable Microsoft Defender for Cloud"
-  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/ac076320-ddcf-4066-b451-6154cebb8aff"
+  policy_definition_id = "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
   management_group_id  = azurerm_management_group.security.id
   enforce              = false
 }
