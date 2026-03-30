@@ -131,31 +131,3 @@ resource "azurerm_management_group_policy_assignment" "enable_defender" {
   enforce              = false
 }
 
-# -----------------------------------------------
-# CUSTOM POLICY — Deny storage accounts allowing HTTP
-# -----------------------------------------------
-resource "azurerm_policy_definition" "deny_storage_http" {
-  name         = "deny-storage-http"
-  policy_type  = "Custom"
-  mode         = "All"
-  display_name = "Deny storage accounts that allow HTTP traffic"
-  description  = "Ensures all storage accounts enforce HTTPS only"
-
-  management_group_id = var.root_management_group_id
-
-  policy_rule = file("${path.module}/policies/deny-storage-http.json")
-}
-
-resource "azurerm_management_group_policy_assignment" "deny_storage_http" {
-  name                 = "deny-storage-http"
-  display_name         = "Deny storage accounts allowing HTTP"
-  policy_definition_id = azurerm_policy_definition.deny_storage_http.id
-  management_group_id  = azurerm_management_group.platform.id
-  enforce              = false
-
-  parameters = jsonencode({
-    effect = {
-      value = "Audit"
-    }
-  })
-}
