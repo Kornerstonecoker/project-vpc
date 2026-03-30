@@ -31,6 +31,8 @@ resource "azurerm_subnet" "gateway" {
   resource_group_name  = azurerm_resource_group.hub.name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [var.gateway_subnet_cidr]
+
+  #checkov:skip=CKV2_AZURE_31:GatewaySubnet cannot have NSG attached - Azure requirement
 }
 
 # AzureFirewallSubnet — for Azure Firewall
@@ -40,6 +42,8 @@ resource "azurerm_subnet" "firewall" {
   resource_group_name  = azurerm_resource_group.hub.name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [var.firewall_subnet_cidr]
+
+  #checkov:skip=CKV2_AZURE_31:AzureFirewallSubnet cannot have NSG attached - Azure requirement
 }
 
 # AzureBastionSubnet — for Azure Bastion
@@ -49,6 +53,8 @@ resource "azurerm_subnet" "bastion" {
   resource_group_name  = azurerm_resource_group.hub.name
   virtual_network_name = azurerm_virtual_network.hub.name
   address_prefixes     = [var.bastion_subnet_cidr]
+
+  #checkov:skip=CKV2_AZURE_31:AzureBastionSubnet cannot have NSG attached - Azure requirement
 }
 
 # Management subnet — for jumpboxes, monitoring agents
