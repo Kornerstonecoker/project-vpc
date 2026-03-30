@@ -1,35 +1,17 @@
 {
-  "properties": {
-    "displayName": "Deny storage accounts that allow HTTP traffic",
-    "description": "Ensures all storage accounts enforce HTTPS-only traffic. HTTP connections to storage accounts expose data in transit to interception.",
-    "mode": "All",
-    "parameters": {
-      "effect": {
-        "type": "String",
-        "defaultValue": "Audit",
-        "allowedValues": ["Audit", "Deny", "Disabled"],
-        "metadata": {
-          "displayName": "Effect",
-          "description": "Audit, Deny, or Disabled"
-        }
-      }
-    },
-    "policyRule": {
-      "if": {
-        "allOf": [
-          {
-            "field": "type",
-            "equals": "Microsoft.Storage/storageAccounts"
-          },
-          {
-            "field": "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly",
-            "notEquals": true
-          }
-        ]
+  "if": {
+    "allOf": [
+      {
+        "field": "type",
+        "equals": "Microsoft.Storage/storageAccounts"
       },
-      "then": {
-        "effect": "[parameters('effect')]"
+      {
+        "field": "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly",
+        "notEquals": true
       }
-    }
+    ]
+  },
+  "then": {
+    "effect": "[parameters('effect')]"
   }
 }

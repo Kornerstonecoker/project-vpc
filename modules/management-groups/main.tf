@@ -143,6 +143,18 @@ resource "azurerm_policy_definition" "deny_storage_http" {
 
   management_group_id = var.root_management_group_id
 
+  parameters = jsonencode({
+    effect = {
+      type         = "String"
+      defaultValue = "Audit"
+      allowedValues = ["Audit", "Deny", "Disabled"]
+      metadata = {
+        displayName = "Effect"
+        description = "Audit, Deny, or Disabled"
+      }
+    }
+  })
+
   policy_rule = file("${path.module}/policies/deny-storage-http.json")
 }
 
