@@ -99,7 +99,7 @@ resource "azurerm_management_group_policy_assignment" "deny_public_ip" {
   display_name         = "Deny public IP addresses on VMs"
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/83a86a26-fd1f-447c-b59d-e51f44264114"
   management_group_id  = azurerm_management_group.landingzones.id
-  enforce              = false
+  enforce              = true
 }
 
 # -----------------------------------------------
@@ -129,4 +129,33 @@ resource "azurerm_management_group_policy_assignment" "enable_defender" {
   policy_definition_id = "/providers/Microsoft.Authorization/policySetDefinitions/1f3afdf9-d0c9-4c3d-847f-89da613e70a8"
   management_group_id  = azurerm_management_group.security.id
   enforce              = false
+}
+
+# -----------------------------------------------
+# CUSTOM POLICY — Deny storage accounts allowing HTTP
+# -----------------------------------------------
+resource "azurerm_policy_definition" "deny_storage_http" {
+  name         = "deny-storage-http"
+  policy_type  = "Custom"
+  mode         = "All"
+  display_name = "Deny storage accounts that allow HTTP traffic"
+  description  = "Ensures all storage accounts enforce HTTPS only"
+
+  management_group_id = var.root_management_group_id
+
+  policy_rule = file("${path.module}/policies/deny-storage-http.json")
+}
+
+resource "azurerm_management_group_policy_assignment" "deny_storage_http" {
+  name                 = "deny-storage-http"
+  display_name         = "Deny storage accounts allowing HTTP"
+  policy_definition_id = azurerm_policy_definition.deny_storage_http.id
+  management_group_id  = azurerm_management_group.platform.id
+  enforce              = false
+
+  parameters = jsonencode({
+    effect = {
+      value = "Audit"
+    }
+  })
 }
