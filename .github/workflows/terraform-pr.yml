@@ -101,6 +101,13 @@ jobs:
             -backend-config="key=hub-spoke/terraform.tfstate" \
             -backend-config="use_azuread_auth=true"
 
+      - name: Import existing resources
+        run: |
+          terraform import \
+            module.hub.azurerm_resource_group.hub \
+            /subscriptions/716ccd4f-d961-48c5-910f-5ed06af608ad/resourceGroups/rg-connectivity-hub \
+            2>&1 | grep -v "already managed" || true
+
       - name: Terraform plan
         id: plan
         run: |
