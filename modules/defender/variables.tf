@@ -8,12 +8,12 @@ variable "security_contact_email" {
   description = "Email address for Defender security alerts"
   type        = string
 }
-
-variable "security_contact_phone" {
-  description = "Phone number for security contact"
-  type        = string
-  default     = ""
-}
+# Not using this 
+# variable "security_contact_phone" {
+#   description = "Phone number for security contact"
+#   type        = string
+#   default     = ""
+# }
 
 variable "log_analytics_workspace_id" {
   description = "Log Analytics workspace ID for Defender data"
