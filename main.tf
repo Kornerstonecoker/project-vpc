@@ -82,3 +82,16 @@ module "spoke_prod" {
 
   depends_on = [module.hub]
 }
+
+# -----------------------------------------------
+# DEFENDER FOR CLOUD
+# -----------------------------------------------
+module "defender" {
+  source = "./modules/defender"
+
+  location               = var.location
+  security_contact_email = "kornerstonecoker@gmail.com"
+  tags                   = var.tags
+
+  depends_on = [module.management_groups]
+}
