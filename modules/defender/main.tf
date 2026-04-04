@@ -68,23 +68,23 @@ resource "azurerm_security_center_subscription_pricing" "defender_dns" {
 # SECURITY CONTACT
 # Who gets notified when Defender fires an alert
 # -----------------------------------------------
-resource "azurerm_security_center_contact" "main" {
-  name  = "security-contact"
-  email = var.security_contact_email
-  # phone = var.security_contact_phone
+# resource "azurerm_security_center_contact" "main" {
+#   name  = "security-contact"
+#   email = var.security_contact_email
+#   # phone = var.security_contact_phone
 
-  alert_notifications = true
-  alerts_to_admins    = true
-  #checkov:skip=CKV_AZURE_20:Phone number optional for learning environment
-}
+#   alert_notifications = true
+#   alerts_to_admins    = true
+#   #checkov:skip=CKV_AZURE_20:Phone number optional for learning environment
+# }
 
 # -----------------------------------------------
 # AUTO PROVISIONING
 # Automatically installs monitoring agent on VMs
 # -----------------------------------------------
-resource "azurerm_security_center_auto_provisioning" "main" {
-  auto_provision = "On"
-}
+# resource "azurerm_security_center_auto_provisioning" "main" {
+#   auto_provision = "On"
+# }
 
 # -----------------------------------------------
 # DEFENDER WORKSPACE SETTING
