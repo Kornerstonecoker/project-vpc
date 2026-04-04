@@ -95,3 +95,20 @@ module "defender" {
 
   depends_on = [module.management_groups]
 }
+
+# -----------------------------------------------
+# KEY VAULT + MANAGED IDENTITY — DEV SPOKE
+# -----------------------------------------------
+module "keyvault_dev" {
+  source = "./modules/keyvault"
+
+  resource_group_name        = "rg-keyvault-dev"
+  location                   = var.location
+  tenant_id                  = data.azurerm_client_config.current.tenant_id
+  admin_object_id            = data.azurerm_client_config.current.object_id
+  spoke_name                 = "dev"
+  log_analytics_workspace_id = module.defender.log_analytics_workspace_id
+  tags                       = var.tags
+
+  depends_on = [module.defender]
+}
