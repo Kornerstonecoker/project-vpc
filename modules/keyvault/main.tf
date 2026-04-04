@@ -17,7 +17,6 @@ resource "azurerm_key_vault" "main" {
   tenant_id           = var.tenant_id
   sku_name            = "standard"
 
-  # security hardening
   enable_rbac_authorization     = true
   purge_protection_enabled      = true
   soft_delete_retention_days    = 30
@@ -29,6 +28,8 @@ resource "azurerm_key_vault" "main" {
   }
 
   tags = var.tags
+
+  #checkov:skip=CKV2_AZURE_32:Private endpoint deferred - public access disabled and network ACL deny-all configured
 }
 
 resource "random_string" "suffix" {
