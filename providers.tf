@@ -1,4 +1,3 @@
-# Terraform provider configuration for project-vpc
 terraform {
   required_version = ">= 1.5.0"
 
@@ -7,9 +6,14 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
+  storage_use_azuread = true
 }
