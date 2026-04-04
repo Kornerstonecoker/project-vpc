@@ -33,26 +33,35 @@ resource "random_string" "suffix" {
 resource "azurerm_security_center_subscription_pricing" "defender_servers" {
   tier          = "Free"
   resource_type = "VirtualMachines"
+  #checkov:skip=CKV_AZURE_19:Free tier used on free trial - Standard enabled on paid subscription
+  #checkov:skip=CKV_AZURE_55:Free tier used on free trial - Standard enabled on paid subscription
 }
 
 resource "azurerm_security_center_subscription_pricing" "defender_storage" {
   tier          = "Free"
   resource_type = "StorageAccounts"
+  #checkov:skip=CKV_AZURE_19:Free tier used on free trial - Standard enabled on paid subscription
+  #checkov:skip=CKV_AZURE_84:Free tier used on free trial - Standard enabled on paid subscription
 }
 
 resource "azurerm_security_center_subscription_pricing" "defender_keyvault" {
   tier          = "Free"
   resource_type = "KeyVaults"
+  #checkov:skip=CKV_AZURE_19:Free tier used on free trial - Standard enabled on paid subscription
+  #checkov:skip=CKV_AZURE_87:Free tier used on free trial - Standard enabled on paid subscription
 }
 
 resource "azurerm_security_center_subscription_pricing" "defender_arm" {
   tier          = "Free"
   resource_type = "Arm"
+  #checkov:skip=CKV_AZURE_19:Free tier used on free trial - Standard enabled on paid subscription
+  #checkov:skip=CKV_AZURE_234:Free tier used on free trial - Standard enabled on paid subscription
 }
 
 resource "azurerm_security_center_subscription_pricing" "defender_dns" {
   tier          = "Free"
   resource_type = "Dns"
+  #checkov:skip=CKV_AZURE_19:Free tier used on free trial - Standard enabled on paid subscription
 }
 
 # -----------------------------------------------
@@ -66,6 +75,7 @@ resource "azurerm_security_center_contact" "main" {
 
   alert_notifications = true
   alerts_to_admins    = true
+  #checkov:skip=CKV_AZURE_20:Phone number optional for learning environment
 }
 
 # -----------------------------------------------
