@@ -33,3 +33,6 @@ backend/.terraform/
 backend/terraform.tfstate
 backend/terraform.tfstate.backup
 backend/.terraform.lock.hcl
+
+*.tfvars
+!example.tfvars
