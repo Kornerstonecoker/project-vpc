@@ -1,12 +1,12 @@
-name: terraform-deploy
+name: terraform-prod
 
 on:
   push:
     branches:
       - main
     paths:
-      - "**.tf"
-      - "**.tfvars"
+      - "environments/prod/**"
+      - "modules/**"
 
 permissions:
   id-token: write
@@ -18,12 +18,17 @@ env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  WORKING_DIR: environments/prod
 
 jobs:
-  deploy:
-    name: deploy
+  deploy-prod:
+    name: deploy-prod
     runs-on: ubuntu-latest
     environment: production
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -46,7 +51,7 @@ jobs:
             -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
             -backend-config="resource_group_name=rg-terraform-state" \
             -backend-config="container_name=tfstate" \
-            -backend-config="key=hub-spoke/terraform.tfstate" \
+            -backend-config="key=environments/prod/terraform.tfstate" \
             -backend-config="use_azuread_auth=true"
 
       - name: Terraform plan

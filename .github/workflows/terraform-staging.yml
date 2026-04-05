@@ -1,12 +1,12 @@
-name: terraform-deploy
+name: terraform-staging
 
 on:
   push:
     branches:
       - main
     paths:
-      - "**.tf"
-      - "**.tfvars"
+      - "environments/staging/**"
+      - "modules/**"
 
 permissions:
   id-token: write
@@ -18,12 +18,17 @@ env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  WORKING_DIR: environments/staging
 
 jobs:
-  deploy:
-    name: deploy
+  deploy-staging:
+    name: deploy-staging
     runs-on: ubuntu-latest
-    environment: production
+    environment: staging
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -46,7 +51,7 @@ jobs:
             -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
             -backend-config="resource_group_name=rg-terraform-state" \
             -backend-config="container_name=tfstate" \
-            -backend-config="key=hub-spoke/terraform.tfstate" \
+            -backend-config="key=environments/staging/terraform.tfstate" \
             -backend-config="use_azuread_auth=true"
 
       - name: Terraform plan
